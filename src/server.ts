@@ -36,15 +36,6 @@ app.use("/api/products", productsRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", ordersRoutes);
 
-// Middleware de tratamento de erros
-app.use((err: Error, req: Request, res: Response, next: any) => {
-  console.error("Error:", err);
-  res.status(500).json({
-    message: "Internal server error",
-    error: process.env.NODE_ENV === "development" ? err.message : undefined,
-  });
-});
-
 // Para desenvolvimento local
 const PORT = process.env.PORT || 3333;
 if (process.env.NODE_ENV !== "production") {
