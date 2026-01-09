@@ -14,9 +14,17 @@ export class CategoriesController {
   static async createCategory(req: Request, res: Response) {
     try {
       const { name, slug, description } = req.body;
+
+      if (!name || !slug || !description) {
+        return res.status(400).json({
+          message: "Name, slug and description are required to create",
+        });
+      }
+
       const category = await prisma.category.create({
         data: { name, slug, description },
       });
+
       return res
         .status(200)
         .json({ message: "Category created successfully", category });
@@ -36,8 +44,14 @@ export class CategoriesController {
           .json({ message: "Category ID is required to update" });
       }
 
+      if (!name || !slug || !description) {
+        return res.status(400).json({
+          message: "Name, slug and description are required to update",
+        });
+      }
+
       const category = await prisma.category.findUnique({
-        where: { id: id as string },
+        where: { id },
       });
 
       if (!category) {
@@ -47,7 +61,7 @@ export class CategoriesController {
       }
 
       const updatedCategory = await prisma.category.update({
-        where: { id: id as string },
+        where: { id },
         data: { name, slug, description },
       });
 
@@ -70,16 +84,19 @@ export class CategoriesController {
       }
 
       const category = await prisma.category.findUnique({
-        where: { id: id as string },
+        where: { id },
       });
+
       if (!category) {
         return res
           .status(404)
           .json({ message: "Category not found to delete" });
       }
+
       await prisma.category.delete({
-        where: { id: id as string },
+        where: { id },
       });
+
       return res.status(200).json({ message: "Category deleted successfully" });
     } catch (error) {
       return res.status(500).json({ message: "Internal server error", error });

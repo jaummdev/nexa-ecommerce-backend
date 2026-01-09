@@ -14,9 +14,16 @@ export class BannersController {
   static async createBanner(req: Request, res: Response) {
     try {
       const { title, image_url } = req.body;
+      if (!title || !image_url) {
+        return res
+          .status(400)
+          .json({ message: "Title and image URL are required to create" });
+      }
+
       const banner = await prisma.banner.create({
         data: { title, image_url },
       });
+
       return res
         .status(200)
         .json({ message: "Banner created successfully", banner });
@@ -36,6 +43,12 @@ export class BannersController {
         return res
           .status(400)
           .json({ message: "Banner ID is required to update" });
+      }
+
+      if (!title || !image_url) {
+        return res
+          .status(400)
+          .json({ message: "Title and image URL are required to update" });
       }
 
       const banner = await prisma.banner.findUnique({
