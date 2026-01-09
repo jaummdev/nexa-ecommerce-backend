@@ -1,0 +1,48 @@
+# Dependências
+node_modules
+.pnpm-store
+
+# Build outputs
+dist
+generated
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testes
+coverage
+.nyc_output
+
+# Documentação
+README.md
+*.md
+
+# Outros
+.cache
+.temp
+tmp
