@@ -32,5 +32,4 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
-// Exportar para Vercel (serverless)
 export default app;
