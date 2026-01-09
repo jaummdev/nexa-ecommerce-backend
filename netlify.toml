@@ -1,9 +1,9 @@
 [build]
-  command = "pnpm install --ignore-scripts && pnpm prisma generate"
+  command = "pnpm install --ignore-scripts"
   functions = "netlify/functions"
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
 
 [[redirects]]
   from = "/*"

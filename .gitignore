@@ -3,4 +3,4 @@
 .env*
 
 node_modules
-/generated/prisma
+# /generated/prisma - Removido para commitar o Prisma Client gerado
