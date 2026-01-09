@@ -31,13 +31,27 @@ export class BannersController {
     try {
       const { id } = req.params;
       const { title, image_url } = req.body;
-      const banner = await prisma.banner.update({
+
+      if (!id) {
+        return res
+          .status(400)
+          .json({ message: "Banner ID is required to update" });
+      }
+
+      const banner = await prisma.banner.findUnique({
+        where: { id: Number(id) },
+      });
+      if (!banner) {
+        return res.status(404).json({ message: "Banner not found to update" });
+      }
+
+      const updatedBanner = await prisma.banner.update({
         where: { id: Number(id) },
         data: { title, image_url },
       });
       return res
         .status(200)
-        .json({ message: "Banner updated successfully", banner });
+        .json({ message: "Banner updated successfully", updatedBanner });
     } catch (error) {
       return res
         .status(500)
@@ -48,6 +62,12 @@ export class BannersController {
   static async deleteBanner(req: Request, res: Response) {
     try {
       const { id } = req.params;
+
+      if (!id) {
+        return res
+          .status(400)
+          .json({ message: "Banner ID is required to delete" });
+      }
 
       const banner = await prisma.banner.findUnique({
         where: { id: Number(id) },
