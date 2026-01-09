@@ -5,8 +5,8 @@
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "esnext",
-    "moduleResolution": "node",
-    "target": "es2023",
+    "moduleResolution": "bundler",
+    "target": "es2022",
     "outDir": "./dist",
     // rootDir removido para permitir imports de generated/prisma
     "esModuleInterop": true,
