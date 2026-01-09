@@ -4,7 +4,11 @@ import type { Request, Response } from "express";
 export class ProductsController {
   static async getProducts(req: Request, res: Response) {
     try {
-      const products = await prisma.product.findMany();
+      const products = await prisma.product.findMany({
+        include: {
+          category: true,
+        },
+      });
       return res.status(200).json({ products });
     } catch (error) {
       return res.status(500).json({ message: "Internal server error", error });
@@ -49,6 +53,9 @@ export class ProductsController {
           reviewsQuantity,
           reviewsAvg,
           categoryId,
+        },
+        include: {
+          category: true,
         },
       });
 
@@ -95,7 +102,15 @@ export class ProductsController {
           .json({ message: "All fields are required to update a product" });
       }
 
-      const product = await prisma.product.update({
+      const product = await prisma.product.findUnique({
+        where: { id },
+      });
+
+      if (!product) {
+        return res.status(404).json({ message: "Product not found to update" });
+      }
+
+      const updatedProduct = await prisma.product.update({
         where: { id },
         data: {
           name,
@@ -107,10 +122,14 @@ export class ProductsController {
           reviewsAvg,
           categoryId,
         },
+        include: {
+          category: true,
+        },
       });
-      return res
-        .status(200)
-        .json({ message: "Product updated successfully", product });
+      return res.status(200).json({
+        message: "Product updated successfully",
+        product: updatedProduct,
+      });
     } catch (error) {
       return res.status(500).json({ message: "Internal server error", error });
     }
@@ -137,9 +156,7 @@ export class ProductsController {
         where: { id },
       });
 
-      return res
-        .status(200)
-        .json({ message: "Product deleted successfully", product });
+      return res.status(200).json({ message: "Product deleted successfully" });
     } catch (error) {
       return res.status(500).json({ message: "Internal server error", error });
     }
