@@ -1,0 +1,9 @@
+{
+    "buildCommand": "pnpm prisma generate",
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/src/server.ts"
+        }
+    ]
+}

@@ -24,6 +24,13 @@ app.use("/api/products", productsRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", ordersRoutes);
 
-app.listen(3333, () => {
-  console.log("Server is running on port 3333");
-});
+// Para desenvolvimento local
+const PORT = process.env.PORT || 3333;
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+// Exportar para Vercel (serverless)
+export default app;
