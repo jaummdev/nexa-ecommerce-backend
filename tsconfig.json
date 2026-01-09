@@ -8,7 +8,7 @@
     "moduleResolution": "node",
     "target": "es2023",
     "outDir": "./dist",
-    "rootDir": "./src",
+    // rootDir removido para permitir imports de generated/prisma
     "esModuleInterop": true,
     "lib": ["esnext"],
     "types": ["node"],
@@ -41,12 +41,10 @@
     "moduleDetection": "force",
     "skipLibCheck": true
   },
-  // 🔥 ISSO resolve o erro do Prisma
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "lib/**/*.ts", "generated/**/*.ts"],
   "exclude": [
     "node_modules",
     "dist",
-    "generated",
     "prisma"
   ]
 }

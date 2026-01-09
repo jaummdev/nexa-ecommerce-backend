@@ -1,6 +1,7 @@
 {
     "version": 2,
-    "buildCommand": "pnpm prisma generate",
+    "buildCommand": "pnpm install && pnpm prisma generate",
+    "installCommand": "pnpm install",
     "builds": [
         {
             "src": "src/server.ts",

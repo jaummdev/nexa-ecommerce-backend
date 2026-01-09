@@ -8,7 +8,11 @@ import cartRoutes from "./routes/cart/cart.routes";
 import ordersRoutes from "./routes/orders/orders.routes";
 
 const app: Application = express();
+
+// Middleware para parsing JSON
 app.use(express.json());
+
+// CORS
 app.use(
   cors({
     origin: "*",
@@ -17,15 +21,36 @@ app.use(
   })
 );
 
+// Rota de health check
 app.get("/", (req: Request, res: Response) => {
-  res.json({ message: "It's working!" });
+  res.json({
+    message: "It's working!",
+  });
 });
 
+// Rotas da API
 app.use("/api/auth", authRoutes);
 app.use("/api/banners", bannersRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", ordersRoutes);
+
+// Middleware de tratamento de erros
+app.use((err: Error, req: Request, res: Response, next: any) => {
+  console.error("Error:", err);
+  res.status(500).json({
+    message: "Internal server error",
+    error: process.env.NODE_ENV === "development" ? err.message : undefined,
+  });
+});
+
+// Para desenvolvimento local
+const PORT = process.env.PORT || 3333;
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
 
 export default app;
