@@ -1,11 +1,11 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
-import authRoutes from "./routes/auth/auth.routes";
-import bannersRoutes from "./routes/banners/banners.routes";
-import categoriesRoutes from "./routes/categories/categories.routes";
-import productsRoutes from "./routes/products/products.routes";
-import cartRoutes from "./routes/cart/cart.routes";
-import ordersRoutes from "./routes/orders/orders.routes";
+import authRoutes from "./routes/auth/auth.routes.js";
+import bannersRoutes from "./routes/banners/banners.routes.js";
+import categoriesRoutes from "./routes/categories/categories.routes.js";
+import productsRoutes from "./routes/products/products.routes.js";
+import cartRoutes from "./routes/cart/cart.routes.js";
+import ordersRoutes from "./routes/orders/orders.routes.js";
 
 const app: Application = express();
 

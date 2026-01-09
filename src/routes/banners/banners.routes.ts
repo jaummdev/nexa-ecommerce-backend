@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { BannersController } from "../../controllers/banners/banners.controller";
-import { auth } from "../../middlewares/auth";
-import { Role } from "../../../generated/prisma/client";
+import { BannersController } from "../../controllers/banners/banners.controller.js";
+import { auth } from "../../middlewares/auth.js";
+import { Role } from "../../../generated/prisma/client.js";
 
 const router: Router = Router();
 

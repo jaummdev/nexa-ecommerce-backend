@@ -59,7 +59,7 @@ ENV NODE_ENV=production
 # Healthcheck para o Coolify
 # O Coolify pode configurar seu próprio healthcheck, mas este é um fallback
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD node -e "const http=require('http');const p=process.env.PORT||3333;http.get(`http://localhost:${p}/`,r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"
+    CMD node -e "const http=require('http');const p=process.env.PORT||3333;const url='http://localhost:'+p+'/';http.get(url,r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"
 
 # Comando padrão (pode ser sobrescrito no Coolify)
 # Use "start:migrate" se quiser rodar migrations automaticamente

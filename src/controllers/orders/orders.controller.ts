@@ -1,5 +1,5 @@
-import { Prisma, OrderStatus, Role } from "../../../generated/prisma/client";
-import { prisma } from "../../../lib/prisma";
+import { Prisma, OrderStatus, Role } from "../../../generated/prisma/client.js";
+import { prisma } from "../../../lib/prisma.js";
 import { Request, Response } from "express";
 
 export class OrdersController {
