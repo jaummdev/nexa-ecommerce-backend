@@ -13,6 +13,11 @@
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.26.2",
+  "pnpm": {
+    "overrides": {
+      "zeptomatch": "1.0.0"
+    }
+  },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
