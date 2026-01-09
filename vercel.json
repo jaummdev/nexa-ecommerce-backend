@@ -1,9 +1,17 @@
 {
+    "version": 2,
     "buildCommand": "pnpm prisma generate",
+    "installCommand": "pnpm install",
+    "outputDirectory": ".",
+    "functions": {
+        "api/index.ts": {
+            "runtime": "@vercel/node@3"
+        }
+    },
     "rewrites": [
         {
             "source": "/(.*)",
-            "destination": "/src/server.ts"
+            "destination": "/api"
         }
     ]
 }
