@@ -38,10 +38,8 @@ app.use("/api/orders", ordersRoutes);
 
 // Para desenvolvimento local
 const PORT = process.env.PORT || 3333;
-if (process.env.NODE_ENV !== "production") {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
-}
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 export default app;
