@@ -1,4 +1,4 @@
-import express, { Application } from "express";
+import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth/auth.routes";
 import bannersRoutes from "./routes/banners/banners.routes";
@@ -16,6 +16,10 @@ app.use(
     credentials: true,
   })
 );
+
+app.get("/", (req: Request, res: Response) => {
+  res.json({ message: "It's working!" });
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/banners", bannersRoutes);
