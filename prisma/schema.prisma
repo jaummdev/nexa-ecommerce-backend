@@ -13,10 +13,23 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
 model User {
-  id        String   @id @default(uuid())
-  name      String?
-  password  String
+  id       String  @id @default(uuid())
+  name     String?
+  email    String  @unique
+  password String
+  phone    String?
+
+  role Role @default(CUSTOMER)
+
+  cart   Cart?
+  orders Order[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -63,9 +76,9 @@ model Category {
 }
 
 model Cart {
-  id         String   @id @default(uuid())
-  customerId String   @unique
-  customer   Customer @relation(fields: [customerId], references: [id])
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
 
   items CartItem[]
 
@@ -85,16 +98,6 @@ model CartItem {
   @@unique([cartId, productId])
 }
 
-model Customer {
-  id        String  @id @default(uuid())
-  firstName String
-  lastName  String?
-  email     String  @unique
-  phone     String?
-  cart      Cart?
-  orders    Order[]
-}
-
 enum OrderStatus {
   PENDING
   PAID
@@ -104,8 +107,8 @@ enum OrderStatus {
 
 model Order {
   id          String      @id @default(uuid())
-  customerId  String
-  customer    Customer    @relation(fields: [customerId], references: [id])
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
   totalAmount Decimal     @default(0.0)
   status      OrderStatus @default(PENDING)
   orderItems  OrderItem[]
