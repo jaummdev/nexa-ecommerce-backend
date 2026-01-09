@@ -1,15 +1,14 @@
 {
-  // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
-    // "rootDir": "./src",
-    // "outDir": "./dist",
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "esnext",
     "moduleResolution": "node",
     "target": "es2023",
+    "outDir": "./dist",
+    "rootDir": "./src",
     "esModuleInterop": true,
     "lib": ["esnext"],
     "types": ["node"],
@@ -40,6 +39,14 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true,
-  }
+    "skipLibCheck": true
+  },
+  // 🔥 ISSO resolve o erro do Prisma
+  "include": ["src/**/*.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "generated",
+    "prisma"
+  ]
 }
