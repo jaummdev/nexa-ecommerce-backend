@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import { Request, Response } from "express";
 import { prisma } from "../../../lib/prisma";
 import { Role } from "../../../generated/prisma/client";
 import bcrypt from "bcrypt";

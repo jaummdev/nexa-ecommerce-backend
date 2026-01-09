@@ -1,6 +1,6 @@
 import { Prisma, OrderStatus, Role } from "../../../generated/prisma/client";
 import { prisma } from "../../../lib/prisma";
-import type { Request, Response } from "express";
+import { Request, Response } from "express";
 
 export class OrdersController {
   static async getOrders(req: Request, res: Response) {

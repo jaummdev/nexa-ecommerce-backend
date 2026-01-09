@@ -1,5 +1,5 @@
 import { prisma } from "../../../lib/prisma";
-import type { Request, Response } from "express";
+import { Request, Response } from "express";
 
 export class ProductsController {
   static async getProducts(req: Request, res: Response) {

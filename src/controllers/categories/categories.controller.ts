@@ -1,5 +1,5 @@
 import { prisma } from "../../../lib/prisma";
-import type { Request, Response } from "express";
+import { Request, Response } from "express";
 
 export class CategoriesController {
   static async getCategories(req: Request, res: Response) {
