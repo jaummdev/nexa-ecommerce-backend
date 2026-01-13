@@ -7,16 +7,12 @@ import jwt from "jsonwebtoken";
 export class AuthController {
   static async login(req: Request, res: Response) {
     try {
-      const { email, password, role } = req.body;
+      const { email, password } = req.body;
 
       if (!email || !password) {
         return res
           .status(400)
           .json({ message: "Email and password are required" });
-      }
-
-      if (role !== Role.CUSTOMER && role !== Role.ADMIN) {
-        return res.status(400).json({ message: "Invalid role" });
       }
 
       const user = await prisma.user.findUnique({
@@ -27,10 +23,6 @@ export class AuthController {
 
       if (!user) {
         return res.status(401).json({ message: "Invalid credentials" });
-      }
-
-      if (user.role !== role) {
-        return res.status(401).json({ message: "Unauthorized" });
       }
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
