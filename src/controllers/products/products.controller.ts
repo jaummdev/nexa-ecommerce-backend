@@ -114,6 +114,7 @@ export class ProductsController {
         reviewsQuantity,
         reviewsAvg,
         categoryId,
+        isActive,
       } = req.body;
 
       if (!id) {
@@ -130,7 +131,8 @@ export class ProductsController {
         !images ||
         !reviewsQuantity ||
         !reviewsAvg ||
-        !categoryId
+        !categoryId ||
+        !isActive
       ) {
         return res
           .status(400)
@@ -156,6 +158,7 @@ export class ProductsController {
           reviewsQuantity,
           reviewsAvg,
           categoryId,
+          isActive,
         },
         include: {
           category: true,

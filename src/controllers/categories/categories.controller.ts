@@ -68,7 +68,7 @@ export class CategoriesController {
   static async updateCategory(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { name, slug, description } = req.body;
+      const { name, slug, description, isActive } = req.body;
 
       if (!id) {
         return res
@@ -76,7 +76,7 @@ export class CategoriesController {
           .json({ message: "Category ID is required to update" });
       }
 
-      if (!name || !slug || !description) {
+      if (!name || !slug || !description || !isActive) {
         return res.status(400).json({
           message: "Name, slug and description are required to update",
         });
@@ -94,7 +94,7 @@ export class CategoriesController {
 
       const updatedCategory = await prisma.category.update({
         where: { id },
-        data: { name, slug, description },
+        data: { name, slug, description, isActive },
       });
 
       return res

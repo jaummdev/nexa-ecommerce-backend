@@ -46,7 +46,7 @@ export class BannersController {
   static async updateBanner(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { title, image_url } = req.body;
+      const { title, image_url, isActive } = req.body;
 
       if (!id) {
         return res
@@ -54,7 +54,7 @@ export class BannersController {
           .json({ message: "Banner ID is required to update" });
       }
 
-      if (!title || !image_url) {
+      if (!title || !image_url || !isActive) {
         return res
           .status(400)
           .json({ message: "Title and image URL are required to update" });
@@ -69,7 +69,7 @@ export class BannersController {
 
       const updatedBanner = await prisma.banner.update({
         where: { id: Number(id) },
-        data: { title, image_url },
+        data: { title, image_url, isActive },
       });
       return res
         .status(200)
