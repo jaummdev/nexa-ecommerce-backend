@@ -140,15 +140,8 @@ export class CartController {
 
   static async updateCart(req: Request, res: Response) {
     try {
-      const { id } = req.params;
       const { items } = req.body;
       const { userId } = req.user;
-
-      if (!id) {
-        return res.status(400).json({
-          message: "Cart ID is required",
-        });
-      }
 
       if (!items || !Array.isArray(items) || items.length === 0) {
         return res.status(400).json({
@@ -157,7 +150,7 @@ export class CartController {
       }
 
       const existingCart = await prisma.cart.findUnique({
-        where: { id, userId },
+        where: { userId },
       });
 
       if (!existingCart) {
@@ -199,7 +192,7 @@ export class CartController {
       });
 
       const cart = await prisma.cart.update({
-        where: { id, userId },
+        where: { userId },
         data: {
           total: new Prisma.Decimal(total),
           items: {
