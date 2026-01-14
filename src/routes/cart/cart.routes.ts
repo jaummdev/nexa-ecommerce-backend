@@ -7,6 +7,7 @@ const router: Router = Router();
 router.get("/", auth(), CartController.getCart);
 router.post("/", auth(), CartController.addToCart);
 router.put("/", auth(), CartController.updateCart);
-router.delete("/:id", auth(), CartController.deleteCart);
+router.delete("/", auth(), CartController.deleteCart);
+router.delete("/items/:id", auth(), CartController.deleteCartItem);
 
 export default router;

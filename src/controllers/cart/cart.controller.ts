@@ -62,49 +62,29 @@ export class CartController {
         });
       }
 
-      // Calcular o total: soma de (preço * quantidade) de cada item
-      const total = items.reduce((acc: number, item) => {
-        const product = products.find((p) => p.id === item.productId);
-        if (!product) return acc;
-        return acc + Number(product.price) * item.quantity;
-      }, 0);
-
       // Verificar se o carrinho já existe
-      const existingCart = await prisma.cart.findUnique({
+      let existingCart = await prisma.cart.findUnique({
         where: { userId },
+        include: {
+          items: {
+            include: {
+              product: true,
+            },
+          },
+        },
       });
 
       let cart;
+      let totalIncrement = 0;
 
-      if (existingCart) {
-        // Se o carrinho já existe, atualizar os itens
-        // Primeiro, deletar os itens existentes
-        await prisma.cartItem.deleteMany({
-          where: { cartId: existingCart.id },
-        });
+      if (!existingCart) {
+        // Se não existe, criar o carrinho com os itens
+        const total = items.reduce((acc: number, item) => {
+          const product = products.find((p) => p.id === item.productId);
+          if (!product) return acc;
+          return acc + Number(product.price) * item.quantity;
+        }, 0);
 
-        // Depois, criar os novos itens e atualizar o total
-        cart = await prisma.cart.update({
-          where: { id: existingCart.id },
-          data: {
-            total: new Prisma.Decimal(total),
-            items: {
-              create: items.map((item) => ({
-                productId: item.productId,
-                quantity: item.quantity,
-              })),
-            },
-          },
-          include: {
-            items: {
-              include: {
-                product: true,
-              },
-            },
-          },
-        });
-      } else {
-        // Se não existe, criar o carrinho com os itens e o total
         cart = await prisma.cart.create({
           data: {
             userId,
@@ -124,16 +104,63 @@ export class CartController {
             },
           },
         });
+      } else {
+        // Se o carrinho já existe, incrementar/adicionar itens
+        for (const item of items) {
+          const existingItem = existingCart.items.find(
+            (cartItem) => cartItem.productId === item.productId
+          );
+
+          const product = products.find((p) => p.id === item.productId);
+          if (!product) continue;
+
+          if (existingItem) {
+            // Se o item já existe, incrementar a quantidade
+            const newQuantity = existingItem.quantity + item.quantity;
+            await prisma.cartItem.update({
+              where: { id: existingItem.id },
+              data: { quantity: newQuantity },
+            });
+            totalIncrement += Number(product.price) * item.quantity;
+          } else {
+            // Se não existe, criar novo item
+            await prisma.cartItem.create({
+              data: {
+                cartId: existingCart.id,
+                productId: item.productId,
+                quantity: item.quantity,
+              },
+            });
+            totalIncrement += Number(product.price) * item.quantity;
+          }
+        }
+
+        // Atualizar o total do carrinho
+        const newTotal = Number(existingCart.total) + totalIncrement;
+
+        cart = await prisma.cart.update({
+          where: { id: existingCart.id },
+          data: {
+            total: new Prisma.Decimal(newTotal),
+          },
+          include: {
+            items: {
+              include: {
+                product: true,
+              },
+            },
+          },
+        });
       }
 
       return res.status(201).json({
         message: existingCart
-          ? "Cart updated successfully"
+          ? "Items added to cart successfully"
           : "Cart created successfully",
         cart,
       });
     } catch (error) {
-      console.error("Error creating cart:", error);
+      console.error("Error adding to cart:", error);
       return res.status(500).json({ message: "Internal server error", error });
     }
   }
@@ -222,30 +249,113 @@ export class CartController {
 
   static async deleteCart(req: Request, res: Response) {
     try {
-      const { id } = req.params;
       const { userId } = req.user;
 
-      if (!id) {
-        return res.status(400).json({
-          message: "Cart ID is required",
-        });
-      }
-
       const existingCart = await prisma.cart.findUnique({
-        where: { id, userId },
+        where: { userId },
+        include: {
+          items: true,
+        },
       });
 
       if (!existingCart) {
         return res.status(404).json({ message: "Cart not found" });
       }
 
-      await prisma.cart.delete({
-        where: { id, userId },
+      // Deletar todos os itens do carrinho
+      await prisma.cartItem.deleteMany({
+        where: { cartId: existingCart.id },
       });
 
-      return res.status(200).json({ message: "Cart deleted successfully" });
+      // Resetar o total do carrinho
+      const cart = await prisma.cart.update({
+        where: { id: existingCart.id },
+        data: {
+          total: new Prisma.Decimal(0),
+        },
+        include: {
+          items: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      });
+
+      return res.status(200).json({
+        message: "Cart cleared successfully",
+        cart,
+      });
     } catch (error) {
-      console.error("Error deleting cart:", error);
+      console.error("Error clearing cart:", error);
+      return res.status(500).json({ message: "Internal server error", error });
+    }
+  }
+
+  static async deleteCartItem(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const { userId } = req.user;
+
+      if (!id) {
+        return res.status(400).json({
+          message: "Cart item ID is required",
+        });
+      }
+
+      // Buscar o carrinho do usuário
+      const cart = await prisma.cart.findUnique({
+        where: { userId },
+        include: {
+          items: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      });
+
+      if (!cart) {
+        return res.status(404).json({ message: "Cart not found" });
+      }
+
+      // Verificar se o item pertence ao carrinho do usuário
+      const cartItem = cart.items.find((item) => item.id === id);
+
+      if (!cartItem) {
+        return res.status(404).json({ message: "Cart item not found" });
+      }
+
+      // Calcular o valor a ser subtraído do total
+      const itemValue = Number(cartItem.product.price) * cartItem.quantity;
+      const newTotal = Number(cart.total) - itemValue;
+
+      // Deletar o item
+      await prisma.cartItem.delete({
+        where: { id },
+      });
+
+      // Atualizar o total do carrinho
+      const updatedCart = await prisma.cart.update({
+        where: { id: cart.id },
+        data: {
+          total: new Prisma.Decimal(Math.max(0, newTotal)),
+        },
+        include: {
+          items: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      });
+
+      return res.status(200).json({
+        message: "Cart item deleted successfully",
+        cart: updatedCart,
+      });
+    } catch (error) {
+      console.error("Error deleting cart item:", error);
       return res.status(500).json({ message: "Internal server error", error });
     }
   }
