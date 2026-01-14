@@ -1,6 +1,7 @@
 import { Prisma, OrderStatus, Role } from "../../../generated/prisma/client.js";
 import { prisma } from "../../../lib/prisma.js";
 import { Request, Response } from "express";
+import { LIMITS } from "../../config/limits.js";
 
 export class OrdersController {
   static async getOrders(req: Request, res: Response) {
@@ -62,6 +63,17 @@ export class OrdersController {
   static async createOrder(req: Request, res: Response) {
     try {
       const { userId } = req.user;
+
+      // Check order limit per user
+      const userOrderCount = await prisma.order.count({
+        where: { userId },
+      });
+
+      if (userOrderCount >= LIMITS.ORDERS.MAX_PER_USER) {
+        return res.status(400).json({
+          message: LIMITS.ORDERS.MESSAGE,
+        });
+      }
 
       // Buscar o carrinho do usuário com os itens e produtos
       const cart = await prisma.cart.findUnique({

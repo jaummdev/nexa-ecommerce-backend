@@ -1,5 +1,6 @@
 import { prisma } from "../../../lib/prisma.js";
 import { Request, Response } from "express";
+import { LIMITS } from "../../config/limits.js";
 
 export class BannersController {
   static async getBanners(req: Request, res: Response) {
@@ -18,6 +19,14 @@ export class BannersController {
         return res
           .status(400)
           .json({ message: "Title and image URL are required to create" });
+      }
+
+      // Check banner limit
+      const bannerCount = await prisma.banner.count();
+      if (bannerCount >= LIMITS.BANNERS.MAX) {
+        return res.status(400).json({
+          message: LIMITS.BANNERS.MESSAGE,
+        });
       }
 
       const banner = await prisma.banner.create({

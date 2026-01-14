@@ -1,5 +1,6 @@
 import { prisma } from "../../../lib/prisma.js";
 import { Request, Response } from "express";
+import { LIMITS } from "../../config/limits.js";
 
 export class ProductsController {
   static async getProducts(req: Request, res: Response) {
@@ -67,6 +68,14 @@ export class ProductsController {
         return res
           .status(400)
           .json({ message: "All fields are required to create a product" });
+      }
+
+      // Check product limit
+      const productCount = await prisma.product.count();
+      if (productCount >= LIMITS.PRODUCTS.MAX) {
+        return res.status(400).json({
+          message: LIMITS.PRODUCTS.MESSAGE,
+        });
       }
 
       const product = await prisma.product.create({

@@ -1,5 +1,6 @@
 import { prisma } from "../../../lib/prisma.js";
 import { Request, Response } from "express";
+import { LIMITS } from "../../config/limits.js";
 
 export class CategoriesController {
   static async getCategories(req: Request, res: Response) {
@@ -41,6 +42,14 @@ export class CategoriesController {
       if (!name || !slug || !description) {
         return res.status(400).json({
           message: "Name, slug and description are required to create",
+        });
+      }
+
+      // Check category limit
+      const categoryCount = await prisma.category.count();
+      if (categoryCount >= LIMITS.CATEGORIES.MAX) {
+        return res.status(400).json({
+          message: LIMITS.CATEGORIES.MESSAGE,
         });
       }
 

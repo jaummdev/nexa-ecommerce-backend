@@ -1,6 +1,7 @@
 import { Prisma } from "../../../generated/prisma/client.js";
 import { prisma } from "../../../lib/prisma.js";
 import { Request, Response } from "express";
+import { LIMITS } from "../../config/limits.js";
 
 export class CartController {
   static async getCart(req: Request, res: Response) {
@@ -73,6 +74,33 @@ export class CartController {
           },
         },
       });
+
+      // Check cart items limit
+      if (existingCart) {
+        const uniqueProductIds = new Set(existingCart.items.map((item) => item.productId));
+        const newProductIds = new Set(items.map((item) => item.productId));
+        
+        // Count unique products that will be in cart after adding
+        newProductIds.forEach((id) => {
+          if (!uniqueProductIds.has(id)) {
+            uniqueProductIds.add(id);
+          }
+        });
+
+        if (uniqueProductIds.size > LIMITS.CART.MAX_ITEMS) {
+          return res.status(400).json({
+            message: LIMITS.CART.MESSAGE,
+          });
+        }
+      } else {
+        // New cart - check if items exceed limit
+        const uniqueProductIds = new Set(items.map((item) => item.productId));
+        if (uniqueProductIds.size > LIMITS.CART.MAX_ITEMS) {
+          return res.status(400).json({
+            message: LIMITS.CART.MESSAGE,
+          });
+        }
+      }
 
       let cart;
       let totalIncrement = 0;
