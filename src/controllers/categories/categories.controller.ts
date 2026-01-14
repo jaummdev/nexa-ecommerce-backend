@@ -76,7 +76,7 @@ export class CategoriesController {
           .json({ message: "Category ID is required to update" });
       }
 
-      if (!name || !slug || !description || !isActive) {
+      if (!name || !slug || !description) {
         return res.status(400).json({
           message: "Name, slug and description are required to update",
         });

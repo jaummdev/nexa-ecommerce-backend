@@ -131,8 +131,7 @@ export class ProductsController {
         !images ||
         !reviewsQuantity ||
         !reviewsAvg ||
-        !categoryId ||
-        !isActive
+        !categoryId
       ) {
         return res
           .status(400)

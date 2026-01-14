@@ -54,7 +54,7 @@ export class BannersController {
           .json({ message: "Banner ID is required to update" });
       }
 
-      if (!title || !image_url || !isActive) {
+      if (!title || !image_url) {
         return res
           .status(400)
           .json({ message: "Title and image URL are required to update" });
