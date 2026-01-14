@@ -28,6 +28,37 @@ export class OrdersController {
     }
   }
 
+  static async getOrderById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        return res
+          .status(400)
+          .json({ message: "Order ID is required to get an order" });
+      }
+
+      const order = await prisma.order.findUnique({
+        where: { id },
+        include: {
+          orderItems: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      });
+
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      return res.status(200).json({ order });
+    } catch (error) {
+      console.error("Error getting order:", error);
+      return res.status(500).json({ message: "Internal server error", error });
+    }
+  }
+
   static async createOrder(req: Request, res: Response) {
     try {
       const { userId } = req.user;
