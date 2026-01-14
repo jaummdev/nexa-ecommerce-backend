@@ -5,6 +5,7 @@ import { auth } from "../../middlewares/auth.js";
 const router: Router = Router();
 
 router.get("/", auth(), OrdersController.getOrders);
+router.get("/:id", auth(), OrdersController.getOrderById);
 router.post("/", auth(), OrdersController.createOrder);
 
 router.put("/:id", auth(), OrdersController.updateOrder);

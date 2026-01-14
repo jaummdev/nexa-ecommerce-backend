@@ -11,6 +11,29 @@ export class CategoriesController {
     }
   }
 
+  static async getCategoryById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        return res
+          .status(400)
+          .json({ message: "Category ID is required to get a category" });
+      }
+
+      const category = await prisma.category.findUnique({
+        where: { id },
+      });
+
+      if (!category) {
+        return res.status(404).json({ message: "Category not found" });
+      }
+
+      return res.status(200).json({ category });
+    } catch (error) {
+      return res.status(500).json({ message: "Internal server error", error });
+    }
+  }
+
   static async createCategory(req: Request, res: Response) {
     try {
       const { name, slug, description } = req.body;
